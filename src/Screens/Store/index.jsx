@@ -3,6 +3,8 @@ import { createSharedElementStackNavigator } from "react-navigation-shared-eleme
 import { getProducts } from '../../Contexts/Data'
 import { Card, ProductDetails } from "../../Components/Card"
 import { useEffect } from "react"
+import { ButtonCuston } from '../../Components/Button'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { Navigator, Screen } = createSharedElementStackNavigator()
 
@@ -14,16 +16,38 @@ export const Store = ({ navigation }) => {
         </Navigator>
     )
 }
-//const finalizar Sacola { 'alface': 1 ,'tomate': 2 } => { 1: { 'alface': 1 ,'tomate': 2 }, 2: { 'alface': 2 ,'tomate': 5 }}
+
 export const Catalogo = ({ navigation }) => {
-    return (<ScrollView>
-        {
-            getProducts().map(
-                (item) => (<Card {...item} navigation={navigation} />)
-            )
+    const finalizeOrder = async () => {
+        try {
+            const sacolaValue = await AsyncStorage.getItem('sacola')
+            let sacola = sacolaValue != null ? JSON.parse(sacolaValue) : {}
+
+            const pedidoValue = await AsyncStorage.getItem('pedidos')
+            let pedidos = pedidoValue != null ? JSON.parse(pedidoValue) : {}
+
+            const uniqueId = Date.now().toString()
+            pedidos[uniqueId] = sacola
+
+            await AsyncStorage.setItem('pedidos', JSON.stringify(pedidos))
+            await AsyncStorage.setItem('sacola', JSON.stringify({}))
+        } catch (e) {
+            console.error(e)
         }
-    </ScrollView>)
+    }
+
+    return (
+        <ScrollView>
+            {
+                getProducts().map(
+                    (item) => (<Card {...item} navigation={navigation} />)
+                )
+            }
+            <ButtonCuston onPress={finalizeOrder} placeholder='Finalizar' />
+        </ScrollView>
+    )
 }
+
 export const Detalhes = ({ navigation, route }) => {
     const params = route.params
     useEffect(() => {

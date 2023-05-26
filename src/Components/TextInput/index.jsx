@@ -12,6 +12,7 @@ export const TextCuston = (props) => {
             value={props.value}
             placeholder={props.placeholder}
             style={Style.TextInput}
+            secureTextEntry={props.isPassword}
         />
     </View>)
 }

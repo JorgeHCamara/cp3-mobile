@@ -22,32 +22,37 @@ export const Login = ({ navigation }) => {
         setForm(clone)
     }
     const Validated = () => {
-        return (form.name && form.pass)
+        return (form.nome === user.nome && form.senha === user.senha)
             ? true : false
     }//Validar via banco de dados
     const Next = () => {
-        user.login = true
-        setData('user', user)
-        navigation.navigate('Home')
+        if (Validated()) {
+            user.login = true
+            setData('user', user)
+            navigation.navigate('Home')
+        } else {
+            setError('Login e senha não estão corretos.')
+        }
     }
     const onPress = () => {
         (Validated())
             ? Next()
-            : setError('preencha o formulario corretamente')
+            : setError('Login e senha não estão corretos.')
     }
     return (<View style={Style.container}>
-        <Text style={Style.title}>Login</Text>
+        <Text style={Style.title}>Loja</Text>
         <TextCuston
-            name='name'
-            value={form.name}
+            name='nome'
+            value={form.nome}
             placeholder='Nome'
             CallBack={CallBack} />
         <TextCuston
-            name='pass'
-            value={form.pass}
+            name='senha'
+            value={form.senha}
             placeholder='Senha'
-            CallBack={CallBack} />
+            CallBack={CallBack} 
+            isPassword={true} />
         <Text style={Style.error}>{error}</Text>
-        <ButtonCuston onPress={onPress} placeholder='Cadastrar' />
+        <ButtonCuston onPress={onPress} placeholder='Entrar' />
     </View>)
 }
